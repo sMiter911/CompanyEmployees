@@ -1,12 +1,16 @@
 using CompanyEmployees.Extensions;
+using Contracts.Interfaces;
+using LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+var logger = new LoggerManager();
 
 
 // Add services to the container.
@@ -14,6 +18,9 @@ builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureSqlContext(configuration);
+builder.Services.ConfigureRepositoryManager();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 
 builder.Services.AddControllers();
 
@@ -29,6 +36,7 @@ if(app.Environment.IsDevelopment())
 	app.UseHsts();
 }
 
+app.ConfigureExceptionHandler(logger);
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
