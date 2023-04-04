@@ -4,13 +4,16 @@ using NLog;
 
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
+
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 
 // Add services to the container.
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
+builder.Services.ConfigureSqlContext(configuration);
 
 builder.Services.AddControllers();
 
