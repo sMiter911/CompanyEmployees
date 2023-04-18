@@ -20,6 +20,12 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureSqlContext(configuration);
 builder.Services.ConfigureRepositoryManager();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddControllers(config =>
+{
+	config.RespectBrowserAcceptHeader = true;
+	config.ReturnHttpNotAcceptable = true;
+}).AddXmlDataContractSerializerFormatters()
+.AddCustomCSVFormatter();
 
 
 builder.Services.AddControllers();
