@@ -15,6 +15,11 @@ namespace Repository.Implementations
 		{
 		}
 
+		public void CreateCompany(Company company) {
+			
+			Create(company);
+		}
+
 		public IEnumerable<Company> GetAllCompanies(bool trackChanges)
 		{
 			return FindAll(trackChanges)
@@ -24,8 +29,7 @@ namespace Repository.Implementations
 
 		public Company GetCompany(Guid id, bool trackChanges)
 		{
-			return FindByCondition(c => c.Id.Equals(id), trackChanges)
-				.SingleOrDefault();
+			return FindByCondition(c => c.Id.Equals(id), trackChanges).SingleOrDefault();
 		}
 	}
 }
