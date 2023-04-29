@@ -27,6 +27,11 @@ namespace Repository.Implementations
 				.ToList();
 		}
 
+		public IEnumerable<Company> GetByIds(IEnumerable<Guid> ids, bool trackChanges)
+		{
+			return FindByCondition(x => ids.Contains(x.Id), trackChanges).ToList();
+		}
+
 		public Company GetCompany(Guid id, bool trackChanges)
 		{
 			return FindByCondition(c => c.Id.Equals(id), trackChanges).SingleOrDefault();
