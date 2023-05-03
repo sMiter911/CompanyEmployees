@@ -2,6 +2,7 @@ using CompanyEmployees.Extensions;
 using Contracts.Interfaces;
 using LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using NLog;
 
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
@@ -27,6 +28,11 @@ builder.Services.AddControllers(config =>
 }).AddNewtonsoftJson()
 .AddXmlDataContractSerializerFormatters()
 .AddCustomCSVFormatter();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+	options.SuppressModelStateInvalidFilter = true;
+});
 
 
 builder.Services.AddControllers();

@@ -25,7 +25,7 @@ namespace CompanyEmployees.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult GetEmployessFromCompany(Guid companyId)
+		public IActionResult GetEmployeesFromCompany(Guid companyId)
 		{
 			var company = _repository.Company.GetCompany(companyId, trackChanges: false);
 			if(company == null)
@@ -39,7 +39,7 @@ namespace CompanyEmployees.Controllers
 		}
 
 		[HttpGet("{id}", Name = "GetEmployeeForCompany")]
-		public IActionResult GetEmployeeFroCompany(Guid companyId, Guid id)
+		public IActionResult GetEmployeeFromCompany(Guid companyId, Guid id)
 		{
 			var company = _repository.Company.GetCompany(companyId, trackChanges: false);
 			if(company == null)
@@ -67,6 +67,11 @@ namespace CompanyEmployees.Controllers
 			{
 				_logger.LogError("EmployeeForCreationDto object sent from client is null.");
 				return BadRequest("EmployeeForCreationDto object is null");
+			}
+			if(!ModelState.IsValid)
+			{
+				_logger.LogError("Invalid model state for the EmployeeForCreationDto object");
+				return UnprocessableEntity(ModelState);
 			}
 
 			var company = _repository.Company.GetCompany(companyId, trackChanges: false);
@@ -114,6 +119,11 @@ namespace CompanyEmployees.Controllers
 				_logger.LogError("EmployeeForUpdateDto object sent from client is null.");
 				return BadRequest("EmployeeForUpdateDto object is null");
 			}
+			if (!ModelState.IsValid)
+			{
+				_logger.LogError("Invalid model state for the EmployeeForUpdateDto object");
+				return UnprocessableEntity(ModelState);
+			}
 
 			var company = _repository.Company.GetCompany(companyId, trackChanges: false);
 			if(company == null)
@@ -156,7 +166,16 @@ namespace CompanyEmployees.Controllers
 				return NotFound();
 			}
 			var employeeToPatch = _mapper.Map<EmployeeForUpdateDto>(employeeEntity);
-			patchDoc.ApplyTo(employeeToPatch);
+
+			patchDoc.ApplyTo(employeeToPatch, ModelState);
+
+			TryValidateModel(employeeToPatch);
+
+			if(!ModelState.IsValid)
+			{
+				_logger.LogError("Invalid model state for the patch document");
+				return UnprocessableEntity(ModelState);
+			}
 			_mapper.Map(employeeToPatch, employeeEntity);
 			_repository.Save();
 			return NoContent();
