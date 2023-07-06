@@ -1,3 +1,4 @@
+using CompanyEmployees.ActionFilters;
 using CompanyEmployees.Extensions;
 using Contracts.Interfaces;
 using LoggerService;
@@ -16,11 +17,28 @@ var logger = new LoggerManager();
 
 // Add services to the container.
 builder.Services.ConfigureCors();
+
 builder.Services.ConfigureIISIntegration();
+
 builder.Services.ConfigureLoggerService();
+
 builder.Services.ConfigureSqlContext(configuration);
+
 builder.Services.ConfigureRepositoryManager();
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddScoped<ValidationFilterAttribute>();
+
+builder .Services.AddScoped<ValidateCompanyExistsAttribute>();
+
+builder.Services.AddScoped<ValidateEmployeeForCompanyExistsAttribute>();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+	options.SuppressModelStateInvalidFilter = true;
+});
+
 builder.Services.AddControllers(config =>
 {
 	config.RespectBrowserAcceptHeader = true;
@@ -29,13 +47,6 @@ builder.Services.AddControllers(config =>
 .AddXmlDataContractSerializerFormatters()
 .AddCustomCSVFormatter();
 
-builder.Services.Configure<ApiBehaviorOptions>(options =>
-{
-	options.SuppressModelStateInvalidFilter = true;
-});
-
-
-builder.Services.AddControllers();
 
 var app = builder.Build();
 
