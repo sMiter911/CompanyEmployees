@@ -28,15 +28,20 @@ namespace CompanyEmployees.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetEmployeesFromCompany(Guid companyId, [FromQuery] EmployeeParameters employerParameters)
+		public async Task<IActionResult> GetEmployeesFromCompany(Guid companyId, [FromQuery] EmployeeParameters employeeParameters)
 		{
+			if (!employeeParameters.ValidAgeRange)
+			{
+				return BadRequest("Max age cannot be less that min age");
+			}
+
 			var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges: false);
 			if(company == null)
 			{
 				_logger.LogInfo($"Company with id: {companyId} doesn't exist in the database.");
 				return NotFound();
 			}
-			var employeesFromDb = await _repository.Employee.GetEmployeesAsync(companyId, employerParameters, trackChanges: false);
+			var employeesFromDb = await _repository.Employee.GetEmployeesAsync(companyId, employeeParameters, trackChanges: false);
 
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(employeesFromDb.MetaData));
 
