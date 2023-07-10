@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
+using Entities.RequestFeatures;
+using Newtonsoft.Json;
 
 namespace CompanyEmployees.Controllers
 {
@@ -26,7 +28,7 @@ namespace CompanyEmployees.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetEmployeesFromCompany(Guid companyId)
+		public async Task<IActionResult> GetEmployeesFromCompany(Guid companyId, [FromQuery] EmployeeParameters employerParameters)
 		{
 			var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges: false);
 			if(company == null)
@@ -34,8 +36,12 @@ namespace CompanyEmployees.Controllers
 				_logger.LogInfo($"Company with id: {companyId} doesn't exist in the database.");
 				return NotFound();
 			}
-			var employeesFromDb = await _repository.Employee.GetEmployeesAsync(companyId, trackChanges: false);
-			var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesFromDb);
+			var employeesFromDb = await _repository.Employee.GetEmployeesAsync(companyId, employerParameters, trackChanges: false);
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(employeesFromDb.MetaData));
+
+            var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesFromDb);
+
 			return Ok(employeesDto);
 		}
 
