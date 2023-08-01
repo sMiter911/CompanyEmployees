@@ -1,10 +1,12 @@
 using CompanyEmployees.ActionFilters;
 using CompanyEmployees.Extensions;
 using Contracts.Interfaces;
+using Entities.DataTransferObjects;
 using LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using Repository.DataShaping;
 
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
@@ -33,6 +35,8 @@ builder.Services.AddScoped<ValidationFilterAttribute>();
 builder .Services.AddScoped<ValidateCompanyExistsAttribute>();
 
 builder.Services.AddScoped<ValidateEmployeeForCompanyExistsAttribute>();
+
+builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>> ();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
