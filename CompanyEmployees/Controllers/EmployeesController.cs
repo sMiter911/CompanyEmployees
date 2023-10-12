@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
 using Entities.RequestFeatures;
 using Newtonsoft.Json;
+using static CompanyEmployees.Extensions.ServiceExtensions;
 
 namespace CompanyEmployees.Controllers
 {
@@ -30,6 +31,7 @@ namespace CompanyEmployees.Controllers
 		}
 
 		[HttpGet]
+		[ServiceFilter(typeof(ValidateMediaTypeAttribute))]
 		public async Task<IActionResult> GetEmployeesFromCompany(Guid companyId, [FromQuery] EmployeeParameters employeeParameters)
 		{
 			if (!employeeParameters.ValidAgeRange)

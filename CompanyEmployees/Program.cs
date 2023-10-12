@@ -6,7 +6,8 @@ using LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
-using Repository.DataShaping;
+using Service.DataShaping;
+using static CompanyEmployees.Extensions.ServiceExtensions;
 
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
@@ -37,6 +38,10 @@ builder .Services.AddScoped<ValidateCompanyExistsAttribute>();
 builder.Services.AddScoped<ValidateEmployeeForCompanyExistsAttribute>();
 
 builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>> ();
+
+builder.Services.AddCustomerMediaTypes();
+
+builder.Services.AddScoped<ValidateMediaTypeAttribute>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
